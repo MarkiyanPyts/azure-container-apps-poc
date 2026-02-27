@@ -1,0 +1,4 @@
+services:
+  job:
+    build: .
+    container_name: azure-container-apps-poc
