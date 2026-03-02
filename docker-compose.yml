@@ -2,3 +2,5 @@ services:
   job:
     build: .
     container_name: azure-container-apps-poc
+    environment:
+      - TEST_ENV_VAR=${TEST_ENV_VAR}
