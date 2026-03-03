@@ -13,7 +13,7 @@ uv run run-jobs.py
 
 ## Push Build And Push Image To Registry
 # Note: use --platform linux/amd64 to ensure compatibility with Azure Container Apps (required when building on Apple Silicon)
-`podman build --platform linux/amd64 -t testacrmarkiyan.azurecr.io/azure-container-apps-poc:v1 .`
+`podman build --platform linux/amd64 -t testacrmarkiyan.azurecr.io/azure-container-apps-poc:v1 .`   
 `podman push testacrmarkiyan.azurecr.io/azure-container-apps-poc:v1`
 
 ## Check Container In Registry And Tags
