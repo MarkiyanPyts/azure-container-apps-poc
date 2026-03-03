@@ -1,0 +1,142 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "type": "String"
+        },
+        "name": {
+            "type": "String"
+        },
+        "location": {
+            "type": "String"
+        },
+        "environmentId": {
+            "type": "String"
+        },
+        "containers": {
+            "type": "Array"
+        },
+        "secrets": {
+            "defaultValue": {
+                "arrayValue": []
+            },
+            "type": "SecureObject"
+        },
+        "registries": {
+            "type": "Array"
+        },
+        "environmentName": {
+            "type": "String"
+        },
+        "workspaceName": {
+            "type": "String"
+        },
+        "workspaceLocation": {
+            "type": "String"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.App/jobs",
+            "apiVersion": "2024-08-02-preview",
+            "name": "[parameters('name')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', 'AcrPullRoleAssignmentDeployment')]",
+                "[concat('Microsoft.App/managedEnvironments/', parameters('environmentName'))]"
+            ],
+            "properties": {
+                "environmentId": "[parameters('environmentId')]",
+                "configuration": {
+                    "secrets": "[parameters('secrets').arrayValue]",
+                    "registries": "[parameters('registries')]",
+                    "replicaTimeout": 1800,
+                    "replicaRetryLimit": 0,
+                    "triggerType": "Manual",
+                    "manualTriggerConfig": {
+                        "replicaCompletionCount": 1,
+                        "parallelism": 1
+                    }
+                },
+                "template": {
+                    "containers": "[parameters('containers')]"
+                },
+                "workloadProfileName": "Consumption"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "name": "AcrPullRoleAssignmentDeployment",
+            "dependsOn": [
+                "[concat('Microsoft.App/managedEnvironments/', parameters('environmentName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "resources": [
+                        {
+                            "name": "[guid(deployment().name, 'AcrPullRoleAssignment')]",
+                            "type": "Microsoft.Authorization/roleAssignments",
+                            "apiVersion": "2022-04-01",
+                            "scope": "/subscriptions/d3f8f49f-60bc-4724-aa3c-aff72dd7d865/resourceGroups/test/providers/Microsoft.ContainerRegistry/registries/testAcrMarkiyan",
+                            "properties": {
+                                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d')]",
+                                "principalId": "[reference(resourceId('Microsoft.App/managedEnvironments', 'managedEnvironment-test-a507'), '2024-08-02-preview', 'full').identity.principalId]",
+                                "principalType": "ServicePrincipal",
+                                "scope": "/subscriptions/d3f8f49f-60bc-4724-aa3c-aff72dd7d865/resourceGroups/test/providers/Microsoft.ContainerRegistry/registries/testAcrMarkiyan"
+                            }
+                        }
+                    ]
+                }
+            },
+            "subscriptionId": "d3f8f49f-60bc-4724-aa3c-aff72dd7d865",
+            "resourceGroup": "test"
+        },
+        {
+            "type": "Microsoft.App/managedEnvironments",
+            "apiVersion": "2024-08-02-preview",
+            "name": "[parameters('environmentName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+            ],
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "appLogsConfiguration": {
+                    "destination": "log-analytics",
+                    "logAnalyticsConfiguration": {
+                        "customerId": "[reference(concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2020-08-01').customerId]",
+                        "sharedKey": "[listKeys(concat('Microsoft.OperationalInsights/workspaces/', parameters('workspaceName')), '2020-08-01').primarySharedKey]"
+                    }
+                },
+                "workloadProfiles": [
+                    {
+                        "name": "Consumption",
+                        "workloadProfileType": "Consumption"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "2020-08-01",
+            "name": "[parameters('workspaceName')]",
+            "location": "[parameters('workspaceLocation')]",
+            "dependsOn": [],
+            "properties": {
+                "sku": {
+                    "name": "PerGB2018"
+                },
+                "retentionInDays": 30,
+                "workspaceCapping": {}
+            }
+        }
+    ]
+}

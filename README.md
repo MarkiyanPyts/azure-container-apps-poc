@@ -8,9 +8,13 @@ podman compose up --build
     e.g podman login testacrmarkiyan.azurecr.io -u 00000000-0000-0000-0000-000000000000 -p $TOKEN
 
 ## Push Build And Push Image To Registry
-podman build -t testacrmarkiyan.azurecr.io/azure-container-apps-poc:v1 .
+# Note: use --platform linux/amd64 to ensure compatibility with Azure Container Apps (required when building on Apple Silicon)
+podman build --platform linux/amd64 -t testacrmarkiyan.azurecr.io/azure-container-apps-poc:v1 .
 podman push testacrmarkiyan.azurecr.io/azure-container-apps-poc:v1
 
 ## Check Container In Registry And Tags
 az acr repository list -n testacrmarkiyan -o table
 az acr repository show-tags -n testacrmarkiyan --repository azure-container-apps-poc -o table
+
+## Container JOB API Docs
+https://learn.microsoft.com/en-us/rest/api/resource-manager/containerapps/container-apps/start?view=rest-resource-manager-containerapps-2025-07-01&tabs=Python
