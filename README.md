@@ -22,6 +22,8 @@ uv run run-jobs.py
 `az acr repository show-tags -n testacrmarkiyan --repository azure-container-apps-poc -o table`
 
 ## Container JOB API Docs
+https://learn.microsoft.com/en-us/rest/api/resource-manager/containerapps/jobs/start?view=rest-resource-manager-containerapps-2025-07-01&tabs=HTTP
+
 https://learn.microsoft.com/en-us/rest/api/resource-manager/containerapps/jobs-executions/list?view=rest-resource-manager-containerapps-2025-07-01&tabs=Python
 
 ## Useful Links
