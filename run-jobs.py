@@ -1,6 +1,7 @@
 from azure.identity import DefaultAzureCredential
 
 from azure.mgmt.appcontainers import ContainerAppsAPIClient
+import json
 import os
 import dotenv
 
@@ -35,7 +36,7 @@ def main():
                 "name": "markiyantest",
                 "image": "testacrmarkiyan.azurecr.io/azure-container-apps-poc:v1",
                 "env": [
-                    {"name": "TEST_ENV_VAR", "value": str(sample1)}
+                    {"name": "TEST_ENV_VAR", "value": json.dumps(sample1)}
                 ]
             }
         ]
@@ -47,7 +48,7 @@ def main():
                 "name": "markiyantest",
                 "image": "testacrmarkiyan.azurecr.io/azure-container-apps-poc:v1",
                 "env": [
-                    {"name": "TEST_ENV_VAR", "value": str(sample2)}
+                    {"name": "TEST_ENV_VAR", "value": json.dumps(sample2)}
                 ]
             }
         ]
