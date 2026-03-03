@@ -3,7 +3,7 @@ uv sync
 podman compose up --build
 
 ## Run demo code
-
+uv run run-jobs.py
 
 # ACR Login With Podman
 1. az acr login -n testacrmarkiyan --expose-token
