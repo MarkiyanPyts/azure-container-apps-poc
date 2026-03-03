@@ -1,14 +1,17 @@
-import os
-
 from azure.identity import DefaultAzureCredential
+
 from azure.mgmt.appcontainers import ContainerAppsAPIClient
+import os
+import dotenv
+
+dotenv.load_dotenv()
 
 """
 # PREREQUISITES
     pip install azure-identity
     pip install azure-mgmt-appcontainers
 # USAGE
-    python container_apps_start.py
+    python job_executions_get.py
 
     Before run the sample, please set the values of the client ID, tenant ID and client secret
     of the AAD application as environment variables: AZURE_CLIENT_ID, AZURE_TENANT_ID,
@@ -23,13 +26,14 @@ def main():
         subscription_id=os.environ["AZURE_SUBSCRIPTION_ID"],
     )
 
-    response = client.container_apps.begin_start(
+    response = client.jobs_executions.list(
         resource_group_name="test",
-        container_app_name="markiyantest",
-    ).result()
-    print(response)
+        job_name="markiyantest",
+    )
+    for item in response:
+        print(item)
 
 
-# x-ms-original-file: specification/app/resource-manager/Microsoft.App/ContainerApps/stable/2025-07-01/examples/ContainerApps_Start.json
+# x-ms-original-file: specification/app/resource-manager/Microsoft.App/ContainerApps/stable/2025-07-01/examples/Job_Executions_Get.json
 if __name__ == "__main__":
     main()
