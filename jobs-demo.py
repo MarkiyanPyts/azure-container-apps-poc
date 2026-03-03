@@ -24,8 +24,8 @@ def main():
     )
 
     response = client.container_apps.begin_start(
-        resource_group_name="rg",
-        container_app_name="testworkerapp0",
+        resource_group_name="test",
+        container_app_name="markiyantest",
     ).result()
     print(response)
 
