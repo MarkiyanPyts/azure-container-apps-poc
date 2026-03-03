@@ -1,5 +1,9 @@
 # Run Locally
+uv sync
 podman compose up --build
+
+## Run demo code
+
 
 # ACR Login With Podman
 1. az acr login -n testacrmarkiyan --expose-token
