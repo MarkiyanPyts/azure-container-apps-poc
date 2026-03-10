@@ -27,14 +27,18 @@ def main():
         subscription_id=os.environ["AZURE_SUBSCRIPTION_ID"],
     )
 
+    CONTAINER_APPS_JOB_NAME = os.environ["CONTAINER_APPS_JOB_NAME"]
+    IMAGE_NAME = os.environ["IMAGE_NAME"]
+    RESOURCE_GROUP_NAME = os.environ["RESOURCE_GROUP_NAME"]
+
     sample1 = {"startDate":"12.01.2025","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
     sample2 = {"startDate":"12.01.2026","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
 
     template1 = {
         "containers": [
             {
-                "name": "markiyantest",
-                "image": "testacrmarkiyan.azurecr.io/azure-container-apps-poc:v1",
+                "name": CONTAINER_APPS_JOB_NAME,
+                "image": IMAGE_NAME,
                 "env": [
                     {"name": "TEST_ENV_VAR", "value": json.dumps(sample1)}
                 ]
@@ -45,8 +49,8 @@ def main():
     template2 = {
         "containers": [
             {
-                "name": "markiyantest",
-                "image": "testacrmarkiyan.azurecr.io/azure-container-apps-poc:v1",
+                "name": CONTAINER_APPS_JOB_NAME,
+                "image": IMAGE_NAME,
                 "env": [
                     {"name": "TEST_ENV_VAR", "value": json.dumps(sample2)}
                 ]
@@ -55,15 +59,15 @@ def main():
     }
 
     jobResponse1 = client.jobs.begin_start(
-        resource_group_name="test",
-        job_name="markiyantest",
+        resource_group_name=RESOURCE_GROUP_NAME,
+        job_name=CONTAINER_APPS_JOB_NAME,
         template=template1
     ).result()
     print(jobResponse1)
 
     jobResponse2 = client.jobs.begin_start(
-        resource_group_name="test",
-        job_name="markiyantest",
+        resource_group_name=RESOURCE_GROUP_NAME,
+        job_name=CONTAINER_APPS_JOB_NAME,
         template=template2 
     ).result()
     print(jobResponse2)
