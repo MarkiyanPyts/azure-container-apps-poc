@@ -3,4 +3,4 @@ services:
     build: .
     container_name: azure-container-apps-poc
     environment:
-      - TEST_ENV_VAR=${TEST_ENV_VAR}
+      - STORAGE_CONFIG_FILE_PATH=${STORAGE_CONFIG_FILE_PATH}

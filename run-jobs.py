@@ -4,6 +4,9 @@ from azure.mgmt.appcontainers import ContainerAppsAPIClient
 import json
 import os
 import dotenv
+import uuid
+from datetime import date
+from azure.storage.blob import BlobServiceClient, StandardBlobTier
 
 dotenv.load_dotenv()
 
@@ -20,10 +23,26 @@ dotenv.load_dotenv()
     https://docs.microsoft.com/azure/active-directory/develop/howto-create-service-principal-portal
 """
 
+def uploadToBlob(credential, jsonData) -> str:
+    account_url = f"https://{os.environ['STORAGE_ACCOUNT_NAME']}.blob.core.windows.net"
+
+    # Create the BlobServiceClient object
+    blob_service_client = BlobServiceClient(account_url, credential=credential)
+
+    container_client = blob_service_client.get_container_client(os.environ["TEST_CONTAINER_NAME"])
+    # todays date UTC in YYYY-MM-DDThh:mm:ssZ format
+    today_date = date.today().strftime("%Y-%m-%dT%H:%M:%SZ")
+    upload_path = f"{today_date}/{str(uuid.uuid4())}.json"
+    blob_client = container_client.get_blob_client(upload_path)
+    upload_status = blob_client.upload_blob(json.dumps(jsonData), blob_type="BlockBlob", standard_blob_tier=StandardBlobTier.Hot)
+
+    return upload_path
+
 
 def main():
+    credential = DefaultAzureCredential()
     client = ContainerAppsAPIClient(
-        credential=DefaultAzureCredential(),
+        credential=credential,
         subscription_id=os.environ["AZURE_SUBSCRIPTION_ID"],
     )
 
@@ -32,15 +51,16 @@ def main():
     RESOURCE_GROUP_NAME = os.environ["RESOURCE_GROUP_NAME"]
 
     sample1 = {"startDate":"12.01.2025","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
+    sample_1_upload_path = uploadToBlob(credential, sample1)
     sample2 = {"startDate":"12.01.2026","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
-
+    sample_2_upload_path = uploadToBlob(credential, sample2)
     template1 = {
         "containers": [
             {
                 "name": CONTAINER_APPS_JOB_NAME,
                 "image": IMAGE_NAME,
                 "env": [
-                    {"name": "TEST_ENV_VAR", "value": json.dumps(sample1)}
+                    {"name": "STORAGE_CONFIG_FILE_PATH", "value": sample_1_upload_path}
                 ]
             }
         ]
@@ -52,11 +72,12 @@ def main():
                 "name": CONTAINER_APPS_JOB_NAME,
                 "image": IMAGE_NAME,
                 "env": [
-                    {"name": "TEST_ENV_VAR", "value": json.dumps(sample2)}
+                    {"name": "STORAGE_CONFIG_FILE_PATH", "value": sample_2_upload_path}
                 ]
             }
         ]
     }
+    print(template2)
 
     jobResponse1 = client.jobs.begin_start(
         resource_group_name=RESOURCE_GROUP_NAME,

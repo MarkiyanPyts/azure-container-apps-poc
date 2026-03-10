@@ -7,12 +7,12 @@ def main():
     duration = 120  # seconds
     interval = 10
     elapsed = 0
-    test_env_var = os.environ.get("TEST_ENV_VAR", "{}")
-    print(f"Raw TEST_ENV_VAR: {test_env_var!r}")
+    storage_config_file_path = os.environ.get("STORAGE_CONFIG_FILE_PATH", "{}")
+    print(f"Raw STORAGE_CONFIG_FILE_PATH: {storage_config_file_path}")
     try:
-        config = json.loads(test_env_var)
+        config = json.loads(storage_config_file_path)
     except json.JSONDecodeError as e:
-        print(f"Failed to parse TEST_ENV_VAR as JSON: {e}")
+        print(f"Failed to parse STORAGE_CONFIG_FILE_PATH as JSON: {e}")
         config = {}
     start_date = config.get("startDate", "N/A")
 
