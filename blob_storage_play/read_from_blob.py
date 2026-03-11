@@ -19,7 +19,7 @@ def main():
     # Create the BlobServiceClient object
     blob_service_client = BlobServiceClient(account_url, credential=credential)
 
-    container_client = blob_service_client.get_container_client(os.environ["TEST_CONTAINER_NAME"])
+    container_client = blob_service_client.get_container_client(os.environ["STORAGE_CONTAINER_NAME"])
     # read json file from blob storage, use the same path as upload_to_blob.py
     # https://sacontainerappjobpoc.blob.core.windows.net/test/2026-03-10T00:00:00Z/f3ddeb69-9e58-429b-ae52-b1b6e0fc8c51.json
     file_path = "2026-03-10T00:00:00Z/caed3097-0b18-4880-9455-af129d6acabe.json"

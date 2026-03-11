@@ -29,7 +29,7 @@ def uploadToBlob(credential, jsonData) -> str:
     # Create the BlobServiceClient object
     blob_service_client = BlobServiceClient(account_url, credential=credential)
 
-    container_client = blob_service_client.get_container_client(os.environ["TEST_CONTAINER_NAME"])
+    container_client = blob_service_client.get_container_client(os.environ["STORAGE_CONTAINER_NAME"])
     # todays date UTC in YYYY-MM-DDThh:mm:ssZ format
     today_date = date.today().strftime("%Y-%m-%dT%H:%M:%SZ")
     upload_path = f"{today_date}/{str(uuid.uuid4())}.json"
@@ -50,9 +50,9 @@ def main():
     IMAGE_NAME = os.environ["IMAGE_NAME"]
     RESOURCE_GROUP_NAME = os.environ["RESOURCE_GROUP_NAME"]
 
-    sample1 = {"startDate":"12.01.2025","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
+    sample1 = {"startDate":"12.01.2027","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
     sample_1_upload_path = uploadToBlob(credential, sample1)
-    sample2 = {"startDate":"12.01.2026","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
+    sample2 = {"startDate":"12.01.2028","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
     sample_2_upload_path = uploadToBlob(credential, sample2)
     template1 = {
         "containers": [
