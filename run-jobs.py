@@ -34,7 +34,7 @@ def uploadToBlob(credential, jsonData) -> str:
     today_date = date.today().strftime("%Y-%m-%dT%H:%M:%SZ")
     upload_path = f"{today_date}/{str(uuid.uuid4())}.json"
     blob_client = container_client.get_blob_client(upload_path)
-    upload_status = blob_client.upload_blob(json.dumps(jsonData), blob_type="BlockBlob", standard_blob_tier=StandardBlobTier.Hot)
+    blob_client.upload_blob(json.dumps(jsonData), blob_type="BlockBlob", standard_blob_tier=StandardBlobTier.Hot)
 
     return upload_path
 
@@ -47,8 +47,16 @@ def main():
     )
 
     CONTAINER_APPS_JOB_NAME = os.environ["CONTAINER_APPS_JOB_NAME"]
-    IMAGE_NAME = os.environ["IMAGE_NAME"]
     RESOURCE_GROUP_NAME = os.environ["RESOURCE_GROUP_NAME"]
+
+    job = client.jobs.get(
+        resource_group_name=RESOURCE_GROUP_NAME,
+        job_name=CONTAINER_APPS_JOB_NAME
+    )
+
+    base_container = job.template.containers[0]
+
+    base_container_env_objects = base_container.env if base_container.env is not None else []
 
     sample1 = {"startDate":"12.01.2027","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
     sample_1_upload_path = uploadToBlob(credential, sample1)
@@ -57,11 +65,9 @@ def main():
     template1 = {
         "containers": [
             {
-                "name": CONTAINER_APPS_JOB_NAME,
-                "image": IMAGE_NAME,
-                "env": [
-                    {"name": "STORAGE_CONFIG_FILE_PATH", "value": sample_1_upload_path}
-                ]
+                "name": base_container.name,
+                "image": base_container.image,
+                "env": base_container_env_objects + [{"name": "STORAGE_CONFIG_FILE_PATH", "value": sample_1_upload_path}]
             }
         ]
     }
@@ -69,15 +75,12 @@ def main():
     template2 = {
         "containers": [
             {
-                "name": CONTAINER_APPS_JOB_NAME,
-                "image": IMAGE_NAME,
-                "env": [
-                    {"name": "STORAGE_CONFIG_FILE_PATH", "value": sample_2_upload_path}
-                ]
+                "name": base_container.name,
+                "image": base_container.image,
+                "env": base_container_env_objects + [{"name": "STORAGE_CONFIG_FILE_PATH", "value": sample_2_upload_path}]
             }
         ]
     }
-    print(template2)
 
     jobResponse1 = client.jobs.begin_start(
         resource_group_name=RESOURCE_GROUP_NAME,
