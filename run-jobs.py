@@ -82,20 +82,36 @@ def main():
         ]
     }
 
-    jobResponse1 = client.jobs.begin_start(
+    job_response_1 = client.jobs.begin_start(
         resource_group_name=RESOURCE_GROUP_NAME,
         job_name=CONTAINER_APPS_JOB_NAME,
         template=template1
     ).result()
-    print(jobResponse1)
+    print(job_response_1)
+    job1_name = job_response_1.name
 
-    jobResponse2 = client.jobs.begin_start(
+    job_response_2 = client.jobs.begin_start(
         resource_group_name=RESOURCE_GROUP_NAME,
         job_name=CONTAINER_APPS_JOB_NAME,
         template=template2 
     ).result()
-    print(jobResponse2)
+    print(job_response_2)
+    job2_name = job_response_2.name
 
+
+    ## Check job status
+    status_1 = client.job_execution(
+        resource_group_name=RESOURCE_GROUP_NAME,
+        job_name=CONTAINER_APPS_JOB_NAME,
+        job_execution_name=job1_name,
+    )
+    print('job 1 status:', status_1.status)
+    status_2 = client.job_execution(
+        resource_group_name=RESOURCE_GROUP_NAME,
+        job_name=CONTAINER_APPS_JOB_NAME,
+        job_execution_name=job2_name,
+    )
+    print('job 2 status:', status_2.status)
 
 # x-ms-original-file: specification/app/resource-manager/Microsoft.App/ContainerApps/stable/2025-07-01/examples/Job_Start.json
 if __name__ == "__main__":
