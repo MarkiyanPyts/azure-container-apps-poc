@@ -58,10 +58,13 @@ def main():
 
     base_container_env_objects = base_container.env if base_container.env is not None else []
 
-    sample1 = {"startDate":"12.01.2027","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
+    sample1 = {"parentJobId": "1", "startDate":"12.01.2027","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
     sample_1_upload_path = uploadToBlob(credential, sample1)
-    sample2 = {"startDate":"12.01.2028","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
+    print(f"Uploaded sample1 to blob storage at path: {sample_1_upload_path}")
+    sample2 = {"parentJobId": "1", "startDate":"12.01.2028","endDate":"","runConfig":[{"hierarchyEventConfigurationId":"","funcLoc":"","timeseriesId":"","facility":"","rule":{"ruleSet":"","processingInterval":"","side":"","rpmThreshold":"","recommendedKVal":"","aggMetric":["stddev","avg","min"]}}]}
     sample_2_upload_path = uploadToBlob(credential, sample2)
+    print(f"Uploaded sample2 to blob storage at path: {sample_2_upload_path}")
+    print('image '+ base_container.image)
     template1 = {
         "containers": [
             {
