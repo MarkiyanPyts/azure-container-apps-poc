@@ -28,3 +28,18 @@ https://learn.microsoft.com/en-us/rest/api/resource-manager/containerapps/jobs-e
 
 ## Useful Links
 https://stackoverflow.com/questions/79458024/azure-container-apps-run-multiple-job-with-different-env-variable
+
+## Checking Running Job Resources
+```
+az containerapp job execution show \
+  --name container-apps-job-poc \
+  --resource-group container-apps-job-poc \
+  --job-execution-name container-apps-job-poc-x4crept \
+  -o yaml
+```
+
+## Stopping The Job
+```
+az rest --method POST \
+  --uri "/subscriptions/b22028d9-465f-46fb-a1f1-47f255da0eeb/resourceGroups/<rg>/providers/Microsoft.App/jobs/<job-name>/executions/<execution-name>/stop?api-version=2025-07-01"
+```
